@@ -1,0 +1,3 @@
+D:/Important/articles/P002_MigdalLept/build-src-Desktop_Qt_6_2_3_MinGW_64_bit-Release/CMakeFiles/src.dir
+D:/Important/articles/P002_MigdalLept/build-src-Desktop_Qt_6_2_3_MinGW_64_bit-Release/CMakeFiles/edit_cache.dir
+D:/Important/articles/P002_MigdalLept/build-src-Desktop_Qt_6_2_3_MinGW_64_bit-Release/CMakeFiles/rebuild_cache.dir
