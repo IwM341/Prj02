@@ -50,6 +50,7 @@ cmake_ninja_workdir = D$:/Important/articles/P002_MigdalLept/build-src-Desktop_Q
 build cmake_object_order_depends_target_src: phony || CMakeFiles/src.dir
 
 build CMakeFiles/src.dir/main.cpp.obj: CXX_COMPILER__src_Release D$:/Important/articles/P002_MigdalLept/src/main.cpp || cmake_object_order_depends_target_src
+  DEFINES = -DDELTAMASS
   DEP_FILE = CMakeFiles\src.dir\main.cpp.obj.d
   FLAGS = -O3 -fopenmp -std=gnu++17
   INCLUDES = -ID:/Important/articles/DMFramework/utils

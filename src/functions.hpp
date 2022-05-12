@@ -111,7 +111,7 @@ inline MC::MCResult<vec3> NuOut(Generator G,const vec3& Vcm,const vec3&Nu,
     std::cout << n_v*n_1 << "\t" << n_v*n_2 << "\t" << n_v*n_v << std::endl<< std::endl;
     */
 
-	double Nu1_squared = 	Nu.quad()-deltaE*2*mp/(mk*(mp+mk));
+    double Nu1_squared =Nu.quad()-deltaE*2*mp/(mk*(mp+mk));
 	if(Nu1_squared<=0.0)
 		return MC::MCResult<vec3>(vec3(0,0,0),0);
 	
@@ -129,9 +129,22 @@ inline MC::MCResult<vec3> NuOut(Generator G,const vec3& Vcm,const vec3&Nu,
     double sinTh1 = sqrt(1.0-cosTh1*cosTh1);
     double phi1 = RandomPhi(G);
 
+    const vec3 vNu1 = Nu1*(n_v*cosTh1+n_1*sinTh1*cos(phi1)+n_2*sinTh1*sin(phi1));
 
-    return MC::MCResult<vec3>(Nu1*(n_v*cosTh1+n_1*sinTh1*cos(phi1)+n_2*sinTh1*sin(phi1)),
-								0.5*(1.0+cosTh1max)*Nu1);
+    /*
+    if( (vNu1 + Vcm).norm() >Vesc*(1+1e-10)){
+        PVAR(n_v);
+        PVAR(n_1);
+        PVAR(n_2);
+
+        PVAR(cosTh1);
+        PVAR(cosTh1max);
+        PVAR(vNu1);
+        PVAR(Vesc);
+
+    }*/
+
+    return MC::MCResult<vec3>(vNu1,0.5*(1.0+cosTh1max)*Nu1);
 }
 
 enum ScatteringType{
@@ -176,7 +189,9 @@ inline MC::MCResult<vec3> Vout(double mk,double delta_mk,ScatteringType ST,Targe
 
     // this factor considers inelastic scaterring
     double Inelastic_rd = 1.0;
-    double deltaE = delta_mk;
+
+    //deltaE - enegry to ionization
+    double deltaE = 0.0;
     int nMigdal;
 
     if(ST == IONIZATION){
@@ -228,18 +243,22 @@ inline MC::MCResult<vec3> Vout(double mk,double delta_mk,ScatteringType ST,Targe
     else if(ST == MIGDAL && nMigdal >= 2){
         factor *= MigdalFactor(s,nMigdal);
     }
+    else {
+        factor *= ElasticFactor(s);
+    }
 
     //factor from matrix element
     factor *= PhiFactor(mk,q);
 
-    /*
-    if( (Nu1+Vcm).norm() > Vesc && factor > 1e-40){
-        PVAR(Vcm.norm());
-        PVAR(Nu1.norm());
-        PVAR(Vesc);
-        PVAR(Nu1+Vcm);
+
+    if( (Nu1+Vcm).norm() > Vesc*(1.+1e-10) && factor != 0){
+        std::cout <<
+            SVAR((Nu1+Vcm).norm()) + "\n" +
+            SVAR(factor)+ "\n" +
+            SVAR(Vesc)+ "\n" +
+            SVAR(Nu1+Vcm)+ "\n\n";
     }
-    */
+
 
     return MC::MCResult<vec3>(Nu1+Vcm,factor);
 }
