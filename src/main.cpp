@@ -65,8 +65,8 @@ int main(void){
     const double mk = 10.0;
 
     std::vector<double> Vdmk = Vector(10,[](size_t i){return i*1e-4;});
-    PVAR(Vdmk);
-    PVAR(BM["Vesc"]);
+    //PVAR(Vdmk);
+    //PVAR(BM["Vesc"]);
     //std::vector<double> Vmk = {0.4};
     size_t N = Vdmk.size();
 
@@ -77,24 +77,24 @@ int main(void){
     std::vector<std::pair<double,double>> Fmgd(N);
 
     auto t_start = clock();
-    //#pragma omp parallel for
+    #pragma omp parallel for
     for(size_t i=0;i<N;++i){
-        Fel[i] = SupressFactor(mk,Vdmk[i],ELASTIC,PROTON,PhiFactor55p,BM,"H",1000000,U0*1.1,U0);
-        FelE[i] = SupressFactor(mk,Vdmk[i],ELASTIC,ELECTRON,PhiFactor55e,BM,"H",1000000,U0*1.1,U0);
-        Fion[i] = SupressFactor(mk,Vdmk[i],IONIZATION,PROTON,PhiFactor55p,BM,"H",1000000,U0*1.1,U0);
-        //Fione[i] = SupressFactor(mk,Vdmk[i],IONIZATION,ELECTRON,PhiFactor55e,BM,"H",1000000,U0*1.1,U0);
-        Fmgd[i] = SupressFactor(mk,Vdmk[i],MIGDAL,PROTON,PhiFactor55p,BM,"H",1000000,U0*1.1,U0);
+        Fel[i] = SupressFactor(mk,Vdmk[i],ELASTIC,PROTON,PhiFactorSS,BM,"H",1000000,U0*1.1,U0);
+        FelE[i] = SupressFactor(mk,Vdmk[i],ELASTIC,ELECTRON,PhiFactorSS,BM,"H",1000000,U0*1.1,U0);
+        Fion[i] = SupressFactor(mk,Vdmk[i],IONIZATION,PROTON,PhiFactorSS,BM,"H",1000000,U0*1.1,U0);
+        Fione[i] = SupressFactor(mk,Vdmk[i],IONIZATION,ELECTRON,PhiFactorSS,BM,"H",1000000,U0*1.1,U0);
+        Fmgd[i] = SupressFactor(mk,Vdmk[i],MIGDAL,PROTON,PhiFactorSS,BM,"H",1000000,U0*1.1,U0);
     }
     std::cout << "time = " << (clock()- t_start) <<std::endl;
     std::ofstream ofsEl("el55dm.dat");
     std::ofstream ofsIon("ion55dm.dat");
-    //std::ofstream ofsIonE("ione55dm.dat");
+    std::ofstream ofsIonE("ione55dm.dat");
     std::ofstream ofsElE("elE55dm.dat");
     std::ofstream ofsMgd("mgd55dm.dat");
 
     ofsEl << "d_mk\tF\tdF\n"<< Function::GridFunction1(Vdmk,Fel) << std::endl;
     ofsIon << "d_mk\tF\tdF\n"<< Function::GridFunction1(Vdmk,Fion) << std::endl;
-    //ofsIonE << "d_mk\tF\tdF\n"<< Function::GridFunction1(Vdmk,Fione) << std::endl;
+    ofsIonE << "d_mk\tF\tdF\n"<< Function::GridFunction1(Vdmk,Fione) << std::endl;
     ofsElE << "d_mk\tF\tdF\n"<< Function::GridFunction1(Vdmk,FelE) << std::endl;
 
     ofsMgd << "d_mk\tF\tdF\n"<< Function::GridFunction1(Vdmk,Fmgd) << std::endl;
